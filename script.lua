@@ -63,13 +63,17 @@ local function collectFruits()
     
     for _, item in pairs(workspace:GetChildren()) do
         if item:IsA("Part") and table.find(fruitNames, item.Name) then  -- Verifica se o nome da fruta está na lista
-            humanoidRootPart.CFrame = item.CFrame
-            wait(math.random(0.5, 1))  -- Delay aleatório para emular comportamento humano
-            
-            -- Código para coletar a fruta, se necessário
-            
-            humanoidRootPart.CFrame = initialPosition
-            wait(math.random(0.5, 1))  -- Delay antes de iniciar a próxima coleta
+            -- Verifica se a fruta está dentro de uma distância razoável do jogador
+            local distance = (humanoidRootPart.Position - item.Position).Magnitude
+            if distance <= 10000 then  -- Distância ajustada para 10.000 unidades
+                humanoidRootPart.CFrame = item.CFrame
+                wait(math.random(0.5, 1))  -- Delay aleatório para emular comportamento humano
+                
+                -- Código para coletar a fruta, se necessário
+                
+                humanoidRootPart.CFrame = initialPosition
+                wait(math.random(0.5, 1))  -- Delay antes de iniciar a próxima coleta
+            end
         end
     end
 end
@@ -93,6 +97,8 @@ HubFrame.Size = UDim2.new(0, 200, 0, 150)
 HubFrame.Position = UDim2.new(0.5, -100, 0.5, -75)
 HubFrame.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
 HubFrame.BorderSizePixel = 0
+HubFrame.Active = true  -- Permite interação com o hub
+HubFrame.Draggable = true  -- Permite arrastar o hub
 
 -- Configuração do botão Safe Zone
 SafeZoneButton.Name = "SafeZoneButton"
@@ -149,7 +155,8 @@ end
 SafeZoneButton.MouseButton1Click:Connect(function()
     toggleSafeZone()
     SafeZoneButton.Text = SafeZoneActive and "Desativar Safe Zone" or "Ativar Safe Zone"
-    showMessage("Script ativado", 3)  -- Exibe a mensagem por 3 segundos
+    SafeZoneButton.BackgroundColor3 = SafeZoneActive and Color3.fromRGB(255, 85, 127) or Color3.fromRGB(85, 170, 255)  -- Muda a cor do botão
+    showMessage("Safe Zone " .. (SafeZoneActive and "ativado" or "desativado"), 3)  -- Exibe a mensagem por 3 segundos
 end)
 
 -- Função para iniciar/parar a coleta automática
@@ -158,7 +165,7 @@ CollectButton.MouseButton1Click:Connect(function()
     CollectButton.Text = AutoCollect and "Parar Coleta Automática" or "Iniciar Coleta Automática"
     
     if AutoCollect then
-        showMessage("Script ativado", 3)  -- Exibe a mensagem por 3 segundos
+        showMessage("Coleta Automática ativada", 3)  -- Exibe a mensagem por 3 segundos
     end
 
     while AutoCollect do
